@@ -28,12 +28,12 @@ class _PersonalPageState extends State<PersonalPage> {
         firstPDF = file.name;
       });
       // print(
-          // "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+      // "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
       // print(selectedFilePath);
     }
   }
 
-   _uploadSecondPDF() async {
+  _uploadSecondPDF() async {
     FilePickerResult? result = await FilePicker.platform
         .pickFiles(type: FileType.custom, allowedExtensions: ['pdf']);
     if (result != null) {
@@ -42,7 +42,7 @@ class _PersonalPageState extends State<PersonalPage> {
         secondPDF = file.name;
       });
       // print(
-          // "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+      // "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
       // print(selectedFilePath);
     }
   }
@@ -828,22 +828,57 @@ class _PersonalPageState extends State<PersonalPage> {
                 currentStep: _currentStep,
                 steps: _steps(),
                 onStepContinue: () {
+                  bool isValid = false;
+                  switch (_currentStep) {
+                    case 0:
+                      isValid = _formKey1.currentState!.validate();
+                      break;
+                    case 1:
+                      isValid = _formKey2.currentState!.validate();
+                      break;
+                    
+                  }
+
                   if (_currentStep < (_steps().length - 1)) {
-                    setState(() {
-                      _currentStep += 1;
-                    });
+                    if (isValid) {
+                      setState(() {
+                        _currentStep += 1;
+                      });
+                    }
                   } else {
-                    if (_formKey2.currentState!.validate() &&
-                        _formKey1.currentState!.validate()) {
-                      submitBotRules("wsssh", "text", "text", user_info.text,
-                          listController);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => LoginPage()),
-                      );
+                    if (isValid) {
+                      bool isAllFormsValid =
+                          _formKey1.currentState!.validate() &&
+                              _formKey2.currentState!.validate() ;
+
+                      if (isAllFormsValid) {
+                        submitBotRules("exampleex", "text", "text", 
+                            user_info.text, listController);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => LoginPage()),
+                        );
+                      }
                     }
                   }
                 },
+                // onStepContinue: () {
+                //   if (_currentStep < (_steps().length - 1)) {
+                //     setState(() {
+                //       _currentStep += 1;
+                //     });
+                //   } else {
+                //     if (_formKey2.currentState!.validate() &&
+                //         _formKey1.currentState!.validate()) {
+                //       submitBotRules("wsssh", "text", "text", user_info.text,
+                //           listController);
+                //       Navigator.push(
+                //         context,
+                //         MaterialPageRoute(builder: (context) => LoginPage()),
+                //       );
+                //     }
+                //   }
+                // },
                 onStepCancel: () {
                   if (_currentStep == 0) {
                     return;
