@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:vikram/const.dart';
 import 'package:vikram/features/presentation/pages/agent.dart';
 import 'package:vikram/features/presentation/pages/both.dart';
+import 'package:vikram/features/presentation/pages/chat_interface.dart';
+import 'package:vikram/features/presentation/pages/login.dart';
 import 'package:vikram/features/presentation/pages/onboarding_screen.dart';
 import 'package:vikram/features/presentation/pages/personal.dart';
 import 'package:vikram/features/presentation/pages/register.dart';
@@ -20,19 +22,34 @@ class OnGenerateRoute {
           return materialBuilder(widget: const Register());
         }
 
-        case PageConstant.personalPage:
+      case PageConstant.personalPage:
         {
           return materialBuilder(widget: const PersonalPage());
         }
 
-        case PageConstant.agentPage:
+      case PageConstant.agentPage:
         {
           return materialBuilder(widget: const AgentPage());
         }
 
-        case PageConstant.bothPage:
+      case PageConstant.bothPage:
         {
           return materialBuilder(widget: const BothPage());
+        }
+
+      case PageConstant.loginPage:
+        {
+          return materialBuilder(widget: const LoginPage());
+        }
+
+      case PageConstant.onBoarding:
+        {
+          return materialBuilder(widget: const OnboardingScreen());
+        }
+
+      case PageConstant.chatPage:
+        {
+          return materialBuilder(widget: const ChatInterface());
         }
 
       default:

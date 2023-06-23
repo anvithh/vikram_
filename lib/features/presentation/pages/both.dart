@@ -12,6 +12,12 @@ class BothPage extends StatefulWidget {
 }
 
 class _BothPageState extends State<BothPage> {
+  List<TextEditingController> listController = [TextEditingController()];
+  int ruleNo = 1;
+
+  List<TextEditingController> listController2 = [TextEditingController()];
+  int ruleNo2 = 1;
+
   int _currentStep = 0;
 
   List<Step> _steps() => [
@@ -154,21 +160,29 @@ class _BothPageState extends State<BothPage> {
                   ),
                 ],
               ),
-              const Row(
+              Row(
                 children: [
-                  Text(
-                    'Add rules manually: ',
+                  const Text(
+                    'Add rules: ',
                     style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
                         color: Colors.black),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 5,
                   ),
-                  AddRulesPersonal(
-                    color: Color(0xFF161A27),
-                    iconColor: Colors.white,
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        listController.add(TextEditingController());
+                        ruleNo = ruleNo + 1;
+                      });
+                    },
+                    child: const AddRulesPersonal(
+                      color: Color(0xFF161A27),
+                      iconColor: Colors.white,
+                    ),
                   ),
                 ],
               ),
@@ -315,6 +329,94 @@ class _BothPageState extends State<BothPage> {
                   ],
                 ),
               ),
+              SingleChildScrollView(
+                child: Column(
+                  children: [
+                    ListView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: listController.length - 1,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 15),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10),
+                                  height: 60,
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF141824),
+                                    // color: Colors.white,
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: SingleChildScrollView(
+                                    child: Column(
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Text(
+                                              "Rule ${index + 1}:",
+                                              style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontFamily: 'Orbitron',
+                                                  fontSize: 10.7,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                            const SizedBox(width: 10),
+                                            Expanded(
+                                              child: TextFormField(
+                                                controller:
+                                                    listController[index],
+                                                autofocus: false,
+                                                style: const TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 14),
+                                                decoration:
+                                                    const InputDecoration(
+                                                  border: InputBorder.none,
+                                                  hintText: "Input Text Here",
+                                                  hintStyle: TextStyle(
+                                                    color: Color.fromARGB(
+                                                        255, 132, 140, 155),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              if (index >= 0)
+                                GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      listController[index].clear();
+                                      listController[index].dispose();
+                                      listController.removeAt(index);
+                                    });
+                                  },
+                                  child: const Icon(
+                                    Icons.delete,
+                                    color: Colors.grey,
+                                    size: 28,
+                                  ),
+                                ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
               const SizedBox(
                 height: 25,
               ),
@@ -362,7 +464,7 @@ class _BothPageState extends State<BothPage> {
                                                       style: TextStyle(
                                                           fontWeight:
                                                               FontWeight.normal,
-                                                          fontSize: 13.0,
+                                                          fontSize: 11.0,
                                                           color: Colors.black),
                                                     ),
                                                   ],
@@ -384,7 +486,7 @@ class _BothPageState extends State<BothPage> {
                                         const Text(
                                           'Hello. I need your help to connect with Amit. I have a great proposal for his company.',
                                           style: TextStyle(
-                                              fontSize: 13.0,
+                                              fontSize: 11.0,
                                               color: Colors.black,
                                               fontWeight: FontWeight.normal),
                                         ),
@@ -584,9 +686,9 @@ class _BothPageState extends State<BothPage> {
                     ),
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.0),
-                        borderSide: const BorderSide(color: Colors.white)),
+                        borderSide: const BorderSide(color: Colors.black)),
                     focusedBorder: const OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white)),
+                        borderSide: BorderSide(color: Colors.black)),
                     filled: false,
                     fillColor: const Color(0xFF161A27),
                     focusColor: Colors.black,
@@ -684,7 +786,7 @@ class _BothPageState extends State<BothPage> {
                       style: TextStyle(
                           fontFamily: 'Orbitron',
                           fontWeight: FontWeight.bold,
-                          fontSize: 21,
+                          fontSize: 17,
                           color: Colors.black),
                     ),
                     GestureDetector(
@@ -740,7 +842,7 @@ class _BothPageState extends State<BothPage> {
                       },
                       child: const Text(
                         "See Example",
-                        style: TextStyle(color: Colors.black, fontSize: 14),
+                        style: TextStyle(color: Colors.black, fontSize: 12),
                       ),
                     ),
                   ],
@@ -795,16 +897,15 @@ class _BothPageState extends State<BothPage> {
               const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                   Icon(
+                  Icon(
                     Icons.cloud_upload,
                   ),
-                   SizedBox(
+                  SizedBox(
                     width: 20,
                   ),
                   UploadButtonWidget(
                     content: "Upload Resume",
                     color: Color(0xFF161A27),
-                    
                   ),
                 ],
               ),
@@ -1017,25 +1118,162 @@ class _BothPageState extends State<BothPage> {
                   ],
                 ),
               ),
-              
-              const Row(
+              Row(
                 children: [
-                   Text(
+                  const Text(
                     'Add rules: ',
                     style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
                         color: Colors.black),
                   ),
-                   SizedBox(
+                  const SizedBox(
                     width: 5,
                   ),
-                   AddRulesPersonal(color: Color(0xFF161A27), iconColor: Colors.white,),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        listController2.add(TextEditingController());
+                        ruleNo2 = ruleNo2 + 1;
+                      });
+                    },
+                    child: const AddRulesPersonal(
+                      color: Color(0xFF161A27),
+                      iconColor: Colors.white,
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(
                 height: 20,
               ),
+              SingleChildScrollView(
+                child: Column(
+                  children: [
+                    ListView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: listController2.length - 1,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 15),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10),
+                                  height: 180,
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF141824),
+                                    // color: Colors.white,
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: SingleChildScrollView(
+                                    child: Column(
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Text(
+                                              "Rule ${index + 1}:",
+                                              style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontFamily: 'Orbitron',
+                                                  fontSize: 11,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                            const SizedBox(width: 10),
+                                            Expanded(
+                                              child: TextFormField(
+                                                controller:
+                                                    listController2[index],
+                                                autofocus: false,
+                                                style: const TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 14),
+                                                decoration:
+                                                    const InputDecoration(
+                                                  border: InputBorder.none,
+                                                  hintText: "Input Text Here",
+                                                  hintStyle: TextStyle(
+                                                    color: Color.fromARGB(
+                                                        255, 132, 140, 155),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const Row(
+                                          children: [
+                                            Text(
+                                              'Upload knowledge base: ',
+                                              style: TextStyle(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.white),
+                                            ),
+                                            SizedBox(
+                                              width: 5,
+                                            ),
+                                            UploadButtonWidget(
+                                              content: "Upload",
+                                              color: Colors.white,
+                                              textColor: Colors.black,
+                                            ),
+                                          ],
+                                        ),
+                                        const Row(
+                                          children: [
+                                            Text(
+                                              'API? (optional)',
+                                              style: TextStyle(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.white),
+                                            ),
+                                            SizedBox(
+                                              width: 5,
+                                            ),
+                                            UploadButtonWidget(
+                                              content: "Upload",
+                                              color: Colors.white,
+                                              textColor: Colors.black,
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              if (index >= 0)
+                                GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      listController2[index].clear();
+                                      listController2[index].dispose();
+                                      listController2.removeAt(index);
+                                    });
+                                  },
+                                  child: const Icon(
+                                    Icons.delete,
+                                    color: Colors.grey,
+                                    size: 28,
+                                  ),
+                                ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20,),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -1080,7 +1318,7 @@ class _BothPageState extends State<BothPage> {
                                                       style: TextStyle(
                                                           fontWeight:
                                                               FontWeight.normal,
-                                                          fontSize: 13.0,
+                                                          fontSize: 11.0,
                                                           color: Colors.black),
                                                     ),
                                                   ],
@@ -1102,7 +1340,7 @@ class _BothPageState extends State<BothPage> {
                                         const Text(
                                           'Hello. I need your help to connect with Amit. I have a great proposal for his company.',
                                           style: TextStyle(
-                                              fontSize: 13.0,
+                                              fontSize: 11.0,
                                               color: Colors.black,
                                               fontWeight: FontWeight.normal),
                                         ),

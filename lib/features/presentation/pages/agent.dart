@@ -13,6 +13,9 @@ class AgentPage extends StatefulWidget {
 }
 
 class _AgentPageState extends State<AgentPage> {
+  List<TextEditingController> listController = [TextEditingController()];
+  int ruleNo = 1;
+
   int _currentStep = 0;
   List<Step> _steps() => [
         Step(
@@ -46,9 +49,9 @@ class _AgentPageState extends State<AgentPage> {
                     ),
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.0),
-                        borderSide: const BorderSide(color: Colors.white)),
+                        borderSide: const BorderSide(color: Colors.black)),
                     focusedBorder: const OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white)),
+                        borderSide: BorderSide(color: Colors.black)),
                     filled: false,
                     fillColor: const Color(0xFF161A27),
                     focusColor: Colors.black,
@@ -89,6 +92,7 @@ class _AgentPageState extends State<AgentPage> {
                   UploadButtonWidget(
                     content: "Upload Document",
                     color: Color(0xFF161A27),
+                    textColor: Colors.white,
                   ),
                 ],
               ),
@@ -139,71 +143,81 @@ class _AgentPageState extends State<AgentPage> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(0.0, 0, 0, 0),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    const Text(
-                      'Add Role Description',
-                      style: TextStyle(
-                          fontFamily: 'Orbitron',
-                          fontWeight: FontWeight.bold,
-                          fontSize: 21,
-                          color: Colors.black),
+                    const SizedBox(
+                      height: 100,
                     ),
-                    GestureDetector(
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: const Text(
-                                'Role Description Example',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                              content: const SingleChildScrollView(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Flexible(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'You are a career counselor with 10 years of experience guiding students in India.\nYou are well-versed in helping students make informed decisions about their careers after 12th grade.',
-                                            style: TextStyle(
-                                              fontSize: 15.0,
-                                              color: Colors.black,
-                                            ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        const Text(
+                          'Add Role Description',
+                          style: TextStyle(
+                              fontFamily: 'Orbitron',
+                              fontWeight: FontWeight.bold,
+                              fontSize: 17,
+                              color: Colors.black),
+                        ),
+                        const SizedBox(width: 20,),
+                        GestureDetector(
+                          onTap: () {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text(
+                                    'Role Description Example',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                  content: const SingleChildScrollView(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Flexible(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                'You are a career counselor with 10 years of experience guiding students in India.\nYou are well-versed in helping students make informed decisions about their careers after 12th grade.',
+                                                style: TextStyle(
+                                                  fontSize: 15.0,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                            ],
                                           ),
-                                        ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: const Text(
+                                        'Close',
+                                        style: TextStyle(
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16),
                                       ),
                                     ),
                                   ],
-                                ),
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: const Text(
-                                    'Close',
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16),
-                                  ),
-                                ),
-                              ],
+                                );
+                              },
                             );
                           },
-                        );
-                      },
-                      child: const Text(
-                        "See Example",
-                        style: TextStyle(color: Colors.black, fontSize: 14),
-                      ),
+                          child: const Text(
+                            "See Example",
+                            style: TextStyle(color: Colors.black, fontSize: 12),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -257,16 +271,16 @@ class _AgentPageState extends State<AgentPage> {
               const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                   Icon(
+                  Icon(
                     Icons.cloud_upload,
                   ),
-                   SizedBox(
+                  SizedBox(
                     width: 20,
                   ),
                   UploadButtonWidget(
                     content: "Upload Resume",
                     color: Color(0xFF161A27),
-                    
+                    textColor: Colors.white,
                   ),
                 ],
               ),
@@ -280,6 +294,9 @@ class _AgentPageState extends State<AgentPage> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const SizedBox(
+                height: 50,
+              ),
               const Text(
                 'Set the Agent Rules',
                 style: TextStyle(
@@ -479,24 +496,163 @@ class _AgentPageState extends State<AgentPage> {
                   ],
                 ),
               ),
-              
-              const Row(
+              Row(
                 children: [
-                   Text(
+                  const Text(
                     'Add rules: ',
                     style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
                         color: Colors.black),
                   ),
-                   SizedBox(
+                  const SizedBox(
                     width: 5,
                   ),
-                   AddRulesPersonal(color: Color(0xFF161A27), iconColor: Colors.white,),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        listController.add(TextEditingController());
+                        ruleNo = ruleNo + 1;
+                      });
+                    },
+                    child: const AddRulesPersonal(
+                      color: Color(0xFF161A27),
+                      iconColor: Colors.white,
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(
                 height: 20,
+              ),
+              SingleChildScrollView(
+                child: Column(
+                  children: [
+                    ListView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: listController.length - 1,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 15),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10),
+                                  height: 180,
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF141824),
+                                    // color: Colors.white,
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: SingleChildScrollView(
+                                    child: Column(
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Text(
+                                              "Rule ${index + 1}:",
+                                              style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontFamily: 'Orbitron',
+                                                  fontSize: 11,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                            const SizedBox(width: 10),
+                                            Expanded(
+                                              child: TextFormField(
+                                                controller:
+                                                    listController[index],
+                                                autofocus: false,
+                                                style: const TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 14),
+                                                decoration:
+                                                    const InputDecoration(
+                                                  border: InputBorder.none,
+                                                  hintText: "Input Text Here",
+                                                  hintStyle: TextStyle(
+                                                    color: Color.fromARGB(
+                                                        255, 132, 140, 155),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const Row(
+                                          children: [
+                                            Text(
+                                              'Upload knowledge base: ',
+                                              style: TextStyle(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.white),
+                                            ),
+                                            SizedBox(
+                                              width: 5,
+                                            ),
+                                            UploadButtonWidget(
+                                              content: "Upload",
+                                              color: Colors.white,
+                                              textColor: Colors.black,
+                                            ),
+                                          ],
+                                        ),
+                                        const Row(
+                                          children: [
+                                            Text(
+                                              'API? (optional)',
+                                              style: TextStyle(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.white),
+                                            ),
+                                            SizedBox(
+                                              width: 5,
+                                            ),
+                                            UploadButtonWidget(
+                                              content: "Upload",
+                                              color: Colors.white,
+                                              textColor: Colors.black,
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              if (index >= 0)
+                                GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      listController[index].clear();
+                                      listController[index].dispose();
+                                      listController.removeAt(index);
+                                    });
+                                  },
+                                  child: const Icon(
+                                    Icons.delete,
+                                    color: Colors.grey,
+                                    size: 28,
+                                  ),
+                                ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(
+                height: 25,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -542,7 +698,7 @@ class _AgentPageState extends State<AgentPage> {
                                                       style: TextStyle(
                                                           fontWeight:
                                                               FontWeight.normal,
-                                                          fontSize: 13.0,
+                                                          fontSize: 11.0,
                                                           color: Colors.black),
                                                     ),
                                                   ],
@@ -564,7 +720,7 @@ class _AgentPageState extends State<AgentPage> {
                                         const Text(
                                           'Hello. I need your help to connect with Amit. I have a great proposal for his company.',
                                           style: TextStyle(
-                                              fontSize: 13.0,
+                                              fontSize: 11.0,
                                               color: Colors.black,
                                               fontWeight: FontWeight.normal),
                                         ),
@@ -638,8 +794,8 @@ class _AgentPageState extends State<AgentPage> {
             child: Theme(
               data: ThemeData(
                 colorScheme: const ColorScheme.light(
-                    primary:  Color(0xFF161A27),
-                  ),
+                  primary: Color(0xFF161A27),
+                ),
                 canvasColor: Colors.white,
                 // canvasColor: const Color(0xFF161A27),
               ),
@@ -653,11 +809,19 @@ class _AgentPageState extends State<AgentPage> {
                       children: <Widget>[
                         TextButton(
                           onPressed: details.onStepCancel,
-                          child: const Text('Back', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
+                          child: const Text(
+                            'Back',
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
                         ),
                         TextButton(
                           onPressed: details.onStepContinue,
-                          child: const Text('Next', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
+                          child: const Text(
+                            'Next',
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
                         ),
                       ],
                     ),

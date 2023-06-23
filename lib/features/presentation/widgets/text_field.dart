@@ -4,7 +4,7 @@ class TextFieldWidget extends StatelessWidget {
   final String info;
   final bool isPaasword;
   final TextEditingController? controller;
-  final String Function(String?)? validator;
+  final String? Function(String?)? validator;
 
   const TextFieldWidget(
       {super.key,

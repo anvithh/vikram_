@@ -4,7 +4,7 @@ class TextFieldWidgetPh extends StatelessWidget {
   final String info;
   final bool isPaasword;
   final TextEditingController? controller;
-  final String Function(String?)? validator;
+  final String? Function(String?)? validator;
   const TextFieldWidgetPh(
       {super.key,
       required this.info,
@@ -47,19 +47,20 @@ class TextFieldWidgetPh extends StatelessWidget {
                     ),
                     // Add any desired styling or customization for the text field
                   ),
+                  validator: validator,
                   // Add any necessary validation or controller properties
                 ),
               ),
-              const SizedBox(width: 5),
-              ElevatedButton(
-                onPressed: () {
-                  // Add your button onPressed logic here
-                },
-                child: const Text(
-                  'Send OTP to verify',
-                  style: TextStyle(fontSize: 10),
-                ),
-              ),
+              // const SizedBox(width: 5),
+              // ElevatedButton(
+              //   onPressed: () {
+              //     // Add your button onPressed logic here
+              //   },
+              //   child: const Text(
+              //     'Send OTP to verify',
+              //     style: TextStyle(fontSize: 10),
+              //   ),
+              // ),
             ],
           ),
         ),

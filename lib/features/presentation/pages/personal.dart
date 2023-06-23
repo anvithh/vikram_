@@ -1,7 +1,12 @@
+import 'dart:convert';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:vikram/features/presentation/pages/login.dart';
 import 'package:vikram/features/presentation/widgets/add_rules_personal.dart';
 import 'package:vikram/features/presentation/widgets/header.dart';
 import 'package:vikram/features/presentation/widgets/upload_button.dart';
+import 'package:http/http.dart' as http;
 
 class PersonalPage extends StatefulWidget {
   const PersonalPage({super.key});
@@ -11,7 +16,82 @@ class PersonalPage extends StatefulWidget {
 }
 
 class _PersonalPageState extends State<PersonalPage> {
+  String? firstPDF;
+  String? secondPDF;
+
+  _uploadFirstPDF() async {
+    FilePickerResult? result = await FilePicker.platform
+        .pickFiles(type: FileType.custom, allowedExtensions: ['pdf']);
+    if (result != null) {
+      PlatformFile file = result.files.first;
+      setState(() {
+        firstPDF = file.name;
+      });
+      // print(
+          // "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+      // print(selectedFilePath);
+    }
+  }
+
+   _uploadSecondPDF() async {
+    FilePickerResult? result = await FilePicker.platform
+        .pickFiles(type: FileType.custom, allowedExtensions: ['pdf']);
+    if (result != null) {
+      PlatformFile file = result.files.first;
+      setState(() {
+        secondPDF = file.name;
+      });
+      // print(
+          // "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+      // print(selectedFilePath);
+    }
+  }
+
   List<TextEditingController> listController = [TextEditingController()];
+
+  TextEditingController user_info = TextEditingController();
+
+  Future<void> submitBotRules(String username, String type1, String type2,
+      String info, List<TextEditingController> botRules) async {
+    List<String> botRules_ = [];
+    var url = Uri.parse("https://server.vikrambots.in/store-rules");
+
+    var request = http.MultipartRequest(
+      'POST',
+      Uri.parse('https://server.vikrambots.in/store-rules'),
+    );
+
+    request.fields['username'] = username;
+    request.fields['typeOfFile'] = type1;
+    request.fields['typeOfFile2'] = type2;
+
+    for (var controller in botRules) {
+      botRules_.add(controller.text);
+    }
+    request.fields['rules'] = botRules_.join(", \n");
+    request.fields['user_info'] = info;
+
+    print("the request:\n\n\n");
+    print(request);
+    var response = await request.send();
+    print(response);
+
+    if (response.statusCode == 200) {
+      // Request successful
+      print(
+          "succes!!!!!!!!!!!!!!!!!!!!!!"); // Process the response data as needed
+    } else {
+      // Request failed
+      print('Request failed with status: ${response.statusCode}');
+    }
+
+    print(type1);
+    print(botRules_);
+  }
+
+  final _formKey1 = GlobalKey<FormState>();
+  final _formKey2 = GlobalKey<FormState>();
+
   int ruleNo = 1;
 
   int _currentStep = 0;
@@ -19,89 +99,116 @@ class _PersonalPageState extends State<PersonalPage> {
         Step(
           isActive: _currentStep >= 0,
           title: const Text(''),
-          content: Column(
-            children: [
-              const Padding(
-                padding: EdgeInsets.fromLTRB(0.0, 0, 0, 0),
-                child: Text(
-                  'Tell the bot about yourself',
-                  style: TextStyle(
-                      fontFamily: 'Orbitron',
-                      fontWeight: FontWeight.bold,
-                      fontSize: 21,
-                      color: Colors.white),
-                ),
-              ),
-              const Padding(
-                padding: EdgeInsets.all(30),
-                child: Text(
-                  "Your bot will speak about you to potential employers and customers. Give the best and authentic details about yourself.",
-                  style: TextStyle(color: Colors.white, fontSize: 13),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(30.0, 0, 30, 0),
-                child: TextFormField(
-                  style: const TextStyle(color: Colors.white),
-                  decoration: InputDecoration(
-                    enabledBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(
-                          color: Colors.white), // Add enabled border color
-                    ),
-                    disabledBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(
-                          color: Colors.white), // Add disabled border color
-                    ),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                        borderSide: const BorderSide(color: Colors.white)),
-                    focusedBorder: const OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white)),
-                    filled: false,
-                    fillColor: const Color(0xFF161A27),
-                    focusColor: Colors.white,
-                    labelText: 'About yourself..',
-                    labelStyle: const TextStyle(color: Colors.white),
-                    hintStyle: const TextStyle(color: Colors.white),
-                    contentPadding: const EdgeInsets.symmetric(
-                        vertical: 40.0, horizontal: 16.0),
+          content: Form(
+            key: _formKey1,
+            child: Column(
+              children: [
+                const Padding(
+                  padding: EdgeInsets.fromLTRB(0.0, 0, 0, 0),
+                  child: Text(
+                    'Tell the bot about yourself',
+                    style: TextStyle(
+                        fontFamily: 'Orbitron',
+                        fontWeight: FontWeight.bold,
+                        fontSize: 21,
+                        color: Colors.white),
                   ),
-                  maxLines: null, // Allow unlimited lines of text
+                ),
+                const Padding(
+                  padding: EdgeInsets.all(30),
+                  child: Text(
+                    "Your bot will speak about you to potential employers and customers. Give the best and authentic details about yourself.",
+                    style: TextStyle(color: Colors.white, fontSize: 13),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(30.0, 0, 30, 0),
+                  child: TextFormField(
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Name cannot be empty!';
+                      }
+                      final RegExp nameRegExp = RegExp(r'^[a-zA-Z ]+$');
+                      if (!nameRegExp.hasMatch(value)) {
+                        return 'Please enter a valid full name (only letters)';
+                      }
+                      return null;
+                    },
+                    controller: user_info,
+                    style: const TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                      enabledBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Colors.white), // Add enabled border color
+                      ),
+                      disabledBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Colors.white), // Add disabled border color
+                      ),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                          borderSide: const BorderSide(color: Colors.white)),
+                      focusedBorder: const OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.white)),
+                      filled: false,
+                      fillColor: const Color(0xFF161A27),
+                      focusColor: Colors.white,
+                      labelText: 'About yourself..',
+                      labelStyle: const TextStyle(color: Colors.white),
+                      hintStyle: const TextStyle(color: Colors.white),
+                      contentPadding: const EdgeInsets.symmetric(
+                          vertical: 40.0, horizontal: 16.0),
+                    ),
+                    maxLines: null, // Allow unlimited lines of text
 
-                  textInputAction: TextInputAction
-                      .done, // Change the keyboard action button to 'Done'
+                    textInputAction: TextInputAction
+                        .done, // Change the keyboard action button to 'Done'
+                  ),
                 ),
-              ),
-              const SizedBox(
-                height: 25,
-              ),
-              const Padding(
-                padding: EdgeInsets.fromLTRB(30.0, 0, 30, 0),
-                child: Text(
-                  "Or simply upload your resume and the bot will do the rest!",
-                  style: TextStyle(color: Colors.white),
+                const SizedBox(
+                  height: 25,
                 ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.cloud_upload,
+                const Padding(
+                  padding: EdgeInsets.fromLTRB(30.0, 0, 30, 0),
+                  child: Text(
+                    "Or simply upload your resume and the bot will do the rest!",
+                    style: TextStyle(color: Colors.white),
                   ),
-                  SizedBox(
-                    width: 20,
-                  ),
-                  UploadButtonWidget(
-                    content: "Upload Resume",
-                    color: Colors.white,
-                    textColor: Colors.black,
-                  ),
-                ],
-              ),
-            ],
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.cloud_upload,
+                    ),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                    UploadButtonWidget(
+                      content: "Upload Resume",
+                      color: Colors.white,
+                      textColor: Colors.black,
+                      tonTap: _uploadFirstPDF,
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 8,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Text(
+                      firstPDF ?? 'No file selected',
+                      style: TextStyle(color: Colors.grey[500], fontSize: 10.5),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
         Step(
@@ -125,22 +232,32 @@ class _PersonalPageState extends State<PersonalPage> {
                   style: TextStyle(color: Colors.white),
                 ),
               ),
-              const Row(
+              Row(
                 children: [
-                  Text(
+                  const Text(
                     'Upload the rules: ',
                     style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
                         color: Colors.white),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 5,
                   ),
                   UploadButtonWidget(
                     content: "Upload PDF document",
                     color: Colors.white,
                     textColor: Colors.black,
+                    tonTap: _uploadSecondPDF,
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Text(
+                    secondPDF ?? 'No file selected',
+                    style: TextStyle(color: Colors.grey[500], fontSize: 10.5),
                   ),
                 ],
               ),
@@ -327,82 +444,103 @@ class _PersonalPageState extends State<PersonalPage> {
               SingleChildScrollView(
                 child: Column(
                   children: [
-                    ListView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 15),
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: listController.length - 1,
-                      itemBuilder: (context, index) {
-                        return Padding(
-                          padding: const EdgeInsets.only(top: 15),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10),
-                                  height: 60,
-                                  alignment: Alignment.center,
-                                  decoration: BoxDecoration(
-                                    // color: const Color(0xFF141824),
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: SingleChildScrollView(
-                                    child: Row(
-                                      children: [
-                                        Text(
-                                          "Rule ${index + 1}:",
-                                          style: const TextStyle(
-                                            color: Color(0xFF161A27),
-                                            fontFamily: 'Orbitron',
-                                            fontSize: 10.7,
-                                            fontWeight: FontWeight.bold
-                                          ),
-                                        ),
-                                        const SizedBox(width: 10),
-                                        Expanded(
-                                          child: TextFormField(
-                                            controller: listController[index],
-                                            autofocus: false,
-                                            style: const TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 14),
-                                            decoration: const InputDecoration(
-                                              border: InputBorder.none,
-                                              hintText: "Input Text Here",
-                                              hintStyle: TextStyle(
-                                                color: Color.fromARGB(
-                                                    255, 132, 140, 155),
+                    Form(
+                      key: _formKey2,
+                      child: ListView.builder(
+                        padding: const EdgeInsets.symmetric(horizontal: 15),
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: listController.length - 1,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 15),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10),
+                                    height: 80,
+                                    alignment: Alignment.center,
+                                    decoration: BoxDecoration(
+                                      // color: const Color(0xFF141824),
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: SingleChildScrollView(
+                                      child: Column(
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Text(
+                                                "Rule ${index + 1}:",
+                                                style: const TextStyle(
+                                                    color: Color(0xFF161A27),
+                                                    fontFamily: 'Orbitron',
+                                                    fontSize: 10.7,
+                                                    fontWeight:
+                                                        FontWeight.bold),
                                               ),
-                                            ),
+                                              const SizedBox(width: 10),
+                                              Expanded(
+                                                child: TextFormField(
+                                                  validator: (value) {
+                                                    if (value!.isEmpty) {
+                                                      return 'Name cannot be empty!';
+                                                    }
+                                                    final RegExp nameRegExp =
+                                                        RegExp(r'^[a-zA-Z ]+$');
+                                                    if (!nameRegExp
+                                                        .hasMatch(value)) {
+                                                      return 'Please enter a valid full name (only letters)';
+                                                    }
+                                                    return null;
+                                                  },
+                                                  controller:
+                                                      listController[index],
+                                                  autofocus: false,
+                                                  style: const TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 14),
+                                                  decoration:
+                                                      const InputDecoration(
+                                                    border: InputBorder.none,
+                                                    hintText: "Input Text Here",
+                                                    hintStyle: TextStyle(
+                                                      color: Color.fromARGB(
+                                                          255, 132, 140, 155),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
                                           ),
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                              const SizedBox(width: 10),
-                              if (index >= 0)
-                                GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      listController[index].clear();
-                                      listController[index].dispose();
-                                      listController.removeAt(index);
-                                    });
-                                  },
-                                  child: const Icon(
-                                    Icons.delete,
-                                    color: Colors.grey,
-                                    size: 28,
+                                const SizedBox(width: 10),
+                                if (index >= 0)
+                                  GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        listController[index].clear();
+                                        listController[index].dispose();
+                                        listController.removeAt(index);
+                                      });
+                                    },
+                                    child: const Icon(
+                                      Icons.delete,
+                                      color: Colors.grey,
+                                      size: 28,
+                                    ),
                                   ),
-                                ),
-                            ],
-                          ),
-                        );
-                      },
+                              ],
+                            ),
+                          );
+                        },
+                      ),
                     ),
                   ],
                 ),
@@ -454,7 +592,7 @@ class _PersonalPageState extends State<PersonalPage> {
                                                       style: TextStyle(
                                                           fontWeight:
                                                               FontWeight.normal,
-                                                          fontSize: 13.0,
+                                                          fontSize: 11.0,
                                                           color: Colors.black),
                                                     ),
                                                   ],
@@ -476,7 +614,7 @@ class _PersonalPageState extends State<PersonalPage> {
                                         const Text(
                                           'Hello. I need your help to connect with Amit. I have a great proposal for his company.',
                                           style: TextStyle(
-                                              fontSize: 13.0,
+                                              fontSize: 11.0,
                                               color: Colors.black,
                                               fontWeight: FontWeight.normal),
                                         ),
@@ -694,6 +832,16 @@ class _PersonalPageState extends State<PersonalPage> {
                     setState(() {
                       _currentStep += 1;
                     });
+                  } else {
+                    if (_formKey2.currentState!.validate() &&
+                        _formKey1.currentState!.validate()) {
+                      submitBotRules("wsssh", "text", "text", user_info.text,
+                          listController);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => LoginPage()),
+                      );
+                    }
                   }
                 },
                 onStepCancel: () {
@@ -713,95 +861,3 @@ class _PersonalPageState extends State<PersonalPage> {
     );
   }
 }
-
-// child: Column(
-//   crossAxisAlignment: CrossAxisAlignment.stretch,
-//   children: [
-//     Column(
-//       children: [
-//         const Padding(
-//           padding: EdgeInsets.fromLTRB(0.0, 0, 0, 0),
-//           child: Text(
-//             'Tell the bot about yourself',
-//             style: TextStyle(
-//                 fontFamily: 'Orbitron',
-//                 fontWeight: FontWeight.bold,
-//                 fontSize: 24,
-//                 color: Colors.white),
-//           ),
-//         ),
-//         const SizedBox(
-//           height: 1,
-//         ),
-//         const Padding(
-//           padding: EdgeInsets.all(30),
-//           child: Text(
-//             "Your bot will speak about you to potential employers and customers. Give the best and authentic details about yourself.",
-//             style: TextStyle(color: Colors.white),
-//           ),
-//         ),
-//         Padding(
-//           padding: const EdgeInsets.fromLTRB(30.0, 0, 30, 0),
-//           child: TextFormField(
-//             style: const TextStyle(color: Colors.white),
-//             decoration: InputDecoration(
-//               enabledBorder: const OutlineInputBorder(
-//                 borderSide: BorderSide(
-//                     color:
-//                         Colors.white), // Add enabled border color
-//               ),
-//               disabledBorder: const OutlineInputBorder(
-//                 borderSide: BorderSide(
-//                     color: Colors
-//                         .white), // Add disabled border color
-//               ),
-//               border: OutlineInputBorder(
-//                   borderRadius: BorderRadius.circular(10.0),
-//                   borderSide:
-//                       const BorderSide(color: Colors.white)),
-//               focusedBorder: const OutlineInputBorder(
-//                   borderSide: BorderSide(color: Colors.white)),
-//               filled: false,
-//               fillColor: const Color(0xFF161A27),
-//               focusColor: Colors.white,
-//               labelText: 'About yourself..',
-//               labelStyle: const TextStyle(color: Colors.white),
-//               hintStyle: const TextStyle(color: Colors.white),
-//               contentPadding: const EdgeInsets.symmetric(
-//                   vertical: 40.0, horizontal: 16.0),
-//             ),
-//             maxLines: null, // Allow unlimited lines of text
-
-//             textInputAction: TextInputAction
-//                 .done, // Change the keyboard action button to 'Done'
-//           ),
-//         ),
-//         const SizedBox(
-//           height: 25,
-//         ),
-//         const Text(
-//           "or simply upload your resume and the bot will do the rest!",
-//           style: TextStyle(color: Colors.white),
-//         ),
-//         const SizedBox(
-//           height: 20,
-//         ),
-//         Row(
-//           mainAxisAlignment: MainAxisAlignment.center,
-//           children: [
-//             const Icon(
-//               Icons.cloud_upload,
-//             ),
-//             const SizedBox(
-//               width: 20,
-//             ),
-//             UploadButtonWidget(
-//               content: "Upload Resume",
-//               color: Colors.grey[600],
-//             ),
-//           ],
-//         ),
-//       ],
-//     ),
-//   ],
-// ),

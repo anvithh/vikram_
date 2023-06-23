@@ -3,15 +3,16 @@ import 'package:flutter/material.dart';
 class UploadButtonWidget extends StatelessWidget {
   final String content;
   final Color? color;
+  final VoidCallback? tonTap;
   final Color? textColor;
   const UploadButtonWidget(
-      {super.key, required this.content, required this.color, this.textColor});
+      {super.key, required this.content, required this.color, this.textColor, this.tonTap});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       child: ElevatedButton(
-        onPressed: () {},
+        onPressed: tonTap,
         style: ButtonStyle(
           backgroundColor:
               MaterialStateProperty.all<Color?>(color), // Change button color
